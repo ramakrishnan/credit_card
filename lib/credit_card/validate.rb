@@ -1,9 +1,10 @@
 module CreditCard
 	class Validate
 		attr_accessor :number
-		attr_reader :type
+		attr_reader :type, :errors
 
 		def initialize(options)
+			@errors = []
 			@number = options[:number]
 		end
 
@@ -13,7 +14,7 @@ module CreditCard
 
 		def valid?
 			validate
-			errors.empty
+			errors.empty?
 		end
 
 		def validate
@@ -22,24 +23,25 @@ module CreditCard
 			valid_number
 		end
 
-		def errors
-			@errors
-		end
-
 		def valid_number
 			count = 0
-			card_number.split('').reverse.each_with_index do |index, number|
+			card_number.split('').reverse.each_with_index do |number, index|
 				number = number.to_i
-				count += index % 2 == 0 ? 2*number : number
+				new_num =  index % 2 == 0 ? number : 2*number
+				new_num = new_num >= 10 ? ( new_num / 10 ) + (new_num % 10) : new_num
+				count += new_num
 			end
-			count % 10 == 0
+			is_valid = count % 10 == 0
+			unless is_valid
+				@errors << Error.new({ :type => 'number', :error => 'Invalid card number'})
+			end
 		end
-
-		protected
 
 		def card_number
 			@card_number ||= number.gsub(' ','').gsub('-','')
 		end
+
+		protected
 
 		def find_card_type
 			if card_number.length == 15 and ['34', '37'].include? card_number[0..1]
@@ -51,7 +53,8 @@ module CreditCard
 			elsif (card_number.length == 16 || card_number.length == 13) and card_number[0] == '4'
 				return "Visa"
 			else
-
+				@errors <<	Error.new({ :type => 'name', :error => 'Invalid type'})
+				return "Unknown"
 			end
 		end
 

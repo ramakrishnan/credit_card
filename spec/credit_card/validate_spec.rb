@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), "/../spec_helper" )
+require 'spec_helper'
 module CreditCard
 
 	describe Validate do
@@ -36,11 +36,40 @@ module CreditCard
 			end
 		end
 
-		context 'Valid number by performing Luhn algorithm' do
-			it 'should split odd and even positions of card number (R to L)' do
-				cc = Validate.new({ :number => '4408 0412 3456 7893'})
-				cc.valid_number.should eq(true)
-				cc.type.should eq('Visa')
+		describe 'Validate number by performing Luhn algorithm' do
+			context 'For a valid VISA card' do
+				let(:cc) { Validate.new({ :number => '4408 0412 3456 7893'}) }
+				it 'Should say true for valid number' do
+					cc.valid?.should eq(true)
+				end
+				it 'Should say card type as VISA' do
+					cc.type.should eq('Visa')
+				end
+			end
+
+			context 'For an Unknown card number' do
+				let(:cc) {Validate.new({ :number => '9111111111111111'})}
+				it 'Should say card type as Unknown' do
+					cc.type.should eq('Unknown')
+				end
+				it 'Should return valid? to be false' do
+					cc.valid?.should eq(false)
+				end
+				it 'Should have error with invalud type' do
+					cc.valid?
+					cc.errors.map { |error| error.error }.should eq(['Invalid type', 'Invalid card number'])
+				end
+			end
+
+			context 'For an invalid card number' do
+				let(:cc) {Validate.new({ :number => '4417 1234 5678 9112'})}
+				it 'Should return valid? to be false' do
+					cc.valid?.should eq(false)
+				end
+				it 'Should have error with invalud type' do
+					cc.valid?
+					cc.errors.map { |error| error.error }.should eq(['Invalid card number'])
+				end
 			end
 		end
 
