@@ -1,7 +1,7 @@
 module CreditCard
 	class Validate
 		attr_accessor :number
-		attr_reader :type, :errors
+		attr_reader :type
 
 		def initialize(options)
 			@errors = []
@@ -28,7 +28,7 @@ module CreditCard
 			card_number.split('').reverse.each_with_index do |number, index|
 				number = number.to_i
 				new_num =  index % 2 == 0 ? number : 2*number
-				new_num = new_num >= 10 ? ( new_num / 10 ) + (new_num % 10) : new_num
+				new_num = new_num >= 10 ?  1 + ( new_num - 10 ) : new_num
 				count += new_num
 			end
 			is_valid = count % 10 == 0
