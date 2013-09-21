@@ -1,4 +1,4 @@
-module CreditCard
+module CreditCardValidator
   class Error
     attr_reader :typee, :message
     def initialize(options)

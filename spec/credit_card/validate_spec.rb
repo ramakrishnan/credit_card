@@ -1,5 +1,5 @@
 require 'spec_helper'
-module CreditCard
+module CreditCardValidator
 
   describe Validate do
     context 'Starting up' do

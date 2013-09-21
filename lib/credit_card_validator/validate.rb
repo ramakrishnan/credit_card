@@ -1,4 +1,4 @@
-module CreditCard
+module CreditCardValidator
   class Validate
     attr_accessor :number
     attr_reader :type
